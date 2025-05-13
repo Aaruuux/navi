@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colorful Navigation Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      scroll-behavior: smooth;
+      transition: background-color 0.5s ease;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.7);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 0;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    nav li {
+      margin: 0 25px;
+    }
+
+    nav a {
+      position: relative;
+      color: #333;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      padding: 8px 0;
+      transition: color 0.3s ease;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: #ff7eb9;
+      transition: width 0.4s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #ff7eb9;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    main section {
+      height: 100vh;
+      padding: 120px 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    section h1 {
+      font-size: 3rem;
+      color: #222;
+      text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 600px) {
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav li {
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header id="navbar">
+    <nav>
+      <ul class="nav-list">
+        <li><a href="#home" data-color="#ffecd2">Home</a></li>
+        <li><a href="#services" data-color="#a1c4fd">Services</a></li>
+        <li><a href="#about" data-color="#c2e9fb">About</a></li>
+        <li><a href="#contact" data-color="#fbc2eb">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home"><h1>Welcome Home</h1></section>
+    <section id="services"><h1>Our Services</h1></section>
+    <section id="about"><h1>About Us</h1></section>
+    <section id="contact"><h1>Contact Us</h1></section>
+  </main>
+
+  <script>
+    const navbar = document.getElementById('navbar');
+    const links = document.querySelectorAll('.nav-list a');
+    const sections = document.querySelectorAll('section');
+
+    const highlightLink = (id) => {
+      links.forEach(link => {
+        if (link.getAttribute('href') === `#${id}`) {
+          link.classList.add('active');
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.classList.remove('active');
+          link.removeAttribute('aria-current');
+        }
+      });
+    };
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      navbar.classList.toggle('scrolled', scrollY > 50);
+
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+          const id = section.getAttribute('id');
+          const color = document.querySelector(`a[href="#${id}"]`).dataset.color;
+          document.body.style.backgroundColor = color;
+          highlightLink(id);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // On click, scroll to section and set background color
+    links.forEach(link => {
+      link.addEventListener('click', function () {
+        const color = this.getAttribute('data-color');
+        document.body.style.backgroundColor = color;
+      });
+    });
+
+    // Initialize correct background color on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      handleScroll();
+      const activeLink = document.querySelector('.nav-list a.active');
+      if (activeLink) {
+        document.body.style.backgroundColor = activeLink.getAttribute('data-color');
+      }
+    });
+  </script>
+
+</body>
+</html>
